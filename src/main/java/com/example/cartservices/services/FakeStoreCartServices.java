@@ -8,8 +8,8 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class FakeStoreCartServices implements  CartServices {
     private final String url = "https://fakestoreapi.com/carts";
@@ -29,10 +29,7 @@ public class FakeStoreCartServices implements  CartServices {
 
     }
 
-    private Cart mapToCart(CartDTOs recivedCartDTO) {
 
-        return new Cart(recivedCartDTO.getId(), recivedCartDTO.getUserId(), recivedCartDTO.getDate(), recivedCartDTO.getProducts());
-    }
 
     @Override
     public Cart getCart(Long id) {
@@ -94,16 +91,19 @@ public class FakeStoreCartServices implements  CartServices {
         return cartFetchDTOS.stream().map(this::mapToCart).toList();
     }
 
-    @Override
+   @Override
     public Cart addNewCartProduct(Cart cart) {
 
-        CartDTOs sendCart = mapToCardDTOs(cart);
-        sendCart = restTemplate.postForObject(url, sendCart, CartDTOs.class);
+           CartDTOs sendCart = mapToCardDTOs(cart);
+           sendCart = restTemplate.postForObject(url, sendCart, CartDTOs.class);
 
-        return mapToCart(sendCart);
+           System.out.println(Arrays.stream(sendCart.getProducts()).toList());
+
+           return mapToCart(sendCart);
 
     }
 
+    // Helper Functions
     private CartDTOs mapToCardDTOs(Cart cart) {
 
         return new CartDTOs(cart.getCartId(), cart.getUserId(), cart.getDate(), cart.getCartProducts());
@@ -118,10 +118,15 @@ public class FakeStoreCartServices implements  CartServices {
         return  "Updated Successfully!";
     }
 
+    private Cart mapToCart(CartDTOs recivedCartDTO) {
+
+        return new Cart(recivedCartDTO.getId(), recivedCartDTO.getUserId(), recivedCartDTO.getDate(), recivedCartDTO.getProducts());
+    }
+
     @Override
     public Cart deleteCart(Long cartId) {
-        restTemplate.delete(url + "/" + cartId, CartDTOs.class);
-        return null;
+       restTemplate.delete(url + "/" + cartId, CartDTOs.class);
+      return null;
     }
 
 
