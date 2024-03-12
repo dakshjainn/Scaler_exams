@@ -3,7 +3,6 @@ import com.example.cartservices.models.Cart;
 
 import com.example.cartservices.services.FakeStoreCartServices;
 
-import java.util.List;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,7 +35,7 @@ public class CartControllers {
     // Get Cart Items in Date Range
     @GetMapping("/dateRange")
     public List<Cart> getAllCart(@RequestParam("startdate") String startDate, @RequestParam("enddate") String endDate) {
-        System.out.println(startDate + " " + endDate);
+//        System.out.println(startDate + " " + endDate);
         return fakeStoreCartServices.getCartInDateRange(startDate, endDate);
     }
 
@@ -47,32 +46,57 @@ public class CartControllers {
         return fakeStoreCartServices.getCart(id);
     }
 
-
     //Get User Cart
 
     @GetMapping("/user/{userId}")
     public List<Cart> getUserCarts(@PathVariable Long userId) {
-        return  fakeStoreCartServices.getUserCarts(userId);
+      return  fakeStoreCartServices.getUserCarts(userId);
     }
 
     // Add a new Product in Cart
     @PostMapping(
             value = "", consumes = "application/json", produces = "application/json")
     public Cart createPerson(@RequestBody Cart cart) {
-        return fakeStoreCartServices.addNewCartProduct(cart);
+        try {
+            return fakeStoreCartServices.addNewCartProduct(cart);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     // Update a Product in Cart
     @PutMapping("/{id}")
-    public Cart updateCart(@PathVariable Long id) {
-        return fakeStoreCartServices.updateAProduct(id);
+    public String updateCart(@RequestBody Cart cart) {
+
+        try {
+            fakeStoreCartServices.updateAProduct(cart);
+            return "Product updated successfully";
+        } catch (Exception e) {
+            return "Product not updated";
+        }
     }
+
+    @PatchMapping("/{id}")
+    public String updateCartPatch(@RequestBody Cart cart) {
+
+        try {
+            fakeStoreCartServices.updateAProduct(cart);
+            return "Product updated successfully";
+        } catch (Exception e) {
+            return "Product not updated";
+        }
+    }
+
 
     // Delete a Product from Cart
     @DeleteMapping("/{id}")
     public String deleteCart(@PathVariable Long id) {
-        fakeStoreCartServices.deleteCart(id);
-        return  "Product deleted successfully with "+ id;
+         try {
+                fakeStoreCartServices.deleteCart(id);
+                return "Product deleted successfully with id: " + id + ".";
+            } catch (Exception e) {
+                return "Product not deleted";
+         }
     }
 
 }
